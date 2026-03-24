@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="14dp"
+    app:cardBackgroundColor="#1B2430"
+    app:cardElevation="4dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/imgMoviePoster"
+            android:layout_width="85dp"
+            android:layout_height="125dp"
+            android:scaleType="fitCenter" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
+            android:layout_gravity="center_vertical">
+            <TextView
+                android:id="@+id/txtMovieName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/txtMovieGenre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B0B0B0"
+                android:textSize="13sp"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBook"
+                    android:layout_width="100dp"
+                    android:layout_height="38dp"
+                    android:backgroundTint="#E50914"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingHorizontal="4dp"
+                    android:text="Book Seats"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    app:cornerRadius="16dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrailer"
+                    android:layout_width="95dp"
+                    android:layout_height="38dp"
+                    android:layout_marginStart="10dp"
+                    android:backgroundTint="#FFFFFF"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingHorizontal="4dp"
+                    android:text="Trailer"
+                    android:textColor="#000000"
+                    android:textSize="11sp"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_media_play"
+                    app:iconGravity="start"
+                    app:iconPadding="4dp"
+                    app:iconSize="16dp"
+                    app:iconTint="#000000" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
