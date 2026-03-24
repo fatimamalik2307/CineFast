@@ -47,8 +47,8 @@ public class HomeFragment extends Fragment {
             @NonNull
             @Override
             public Fragment createFragment(int position) {
-                if (position == 0) return MovieListFragment.newInstance(true);
-                return MovieListFragment.newInstance(false);
+                if (position == 0) return new NowShowingFragment();
+                return new ComingSoonFragment();
             }
 
             @Override
