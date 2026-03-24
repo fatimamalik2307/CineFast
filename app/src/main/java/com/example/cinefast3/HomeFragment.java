@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -18,10 +20,24 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 public class HomeFragment extends Fragment {
 
+    private LinearLayout btnToday, btnTomorrow;
+    private View dotToday, dotTomorrow;
+    private TextView txtToday, txtTomorrow;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        btnToday = view.findViewById(R.id.btnToday);
+        btnTomorrow = view.findViewById(R.id.btnTomorrow);
+        dotToday = view.findViewById(R.id.dotToday);
+        dotTomorrow = view.findViewById(R.id.dotTomorrow);
+        txtToday = view.findViewById(R.id.txtToday);
+        txtTomorrow = view.findViewById(R.id.txtTomorrow);
+
+        btnToday.setOnClickListener(v -> selectToday());
+        btnTomorrow.setOnClickListener(v -> selectTomorrow());
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
         ViewPager2 viewPager = view.findViewById(R.id.viewPager);
@@ -42,12 +58,30 @@ public class HomeFragment extends Fragment {
         });
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            tab.setText(position == 0 ? "Now Showing" : "Coming Soon");
+            tab.setText(position == 0 ? "NOW SHOWING" : "COMING SOON");
         }).attach();
 
         menuMore.setOnClickListener(v -> showLastBooking());
 
         return view;
+    }
+
+    private void selectToday() {
+        btnToday.setBackgroundResource(R.drawable.bg_date_selected);
+        btnTomorrow.setBackgroundResource(R.drawable.bg_date_unselected);
+        dotToday.setBackgroundResource(R.drawable.circle_selected);
+        dotTomorrow.setBackgroundResource(R.drawable.circle_unselected);
+        txtToday.setTextColor(0xFFFFFFFF);
+        txtTomorrow.setTextColor(0xFF9CA3AF);
+    }
+
+    private void selectTomorrow() {
+        btnTomorrow.setBackgroundResource(R.drawable.bg_date_selected);
+        btnToday.setBackgroundResource(R.drawable.bg_date_unselected);
+        dotTomorrow.setBackgroundResource(R.drawable.circle_selected);
+        dotToday.setBackgroundResource(R.drawable.circle_unselected);
+        txtTomorrow.setTextColor(0xFFFFFFFF);
+        txtToday.setTextColor(0xFF9CA3AF);
     }
 
     private void showLastBooking() {
