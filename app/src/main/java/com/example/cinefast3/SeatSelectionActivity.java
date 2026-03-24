@@ -109,6 +109,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
     private void updateCount() {
         int count = selectedSeats.size();
         btnSnacks.setEnabled(count > 0);
+        btnBookOnly.setEnabled(count > 0);
     }
 
     private void goSnacks() {
