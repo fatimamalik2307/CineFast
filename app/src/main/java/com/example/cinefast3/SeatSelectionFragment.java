@@ -18,6 +18,7 @@ public class SeatSelectionFragment extends Fragment {
     private TextView txtMovie;
     private Button btnSnacks, btnBookOnly, btnWatchTrailer, btnComingSoon;
     private View layoutNowShowing, layoutComingSoon;
+    private View legendBooked, legendYours;
     
     private HashSet<Integer> selectedSeats = new HashSet<>();
     private double seatPrice = 10.0;
@@ -55,15 +56,26 @@ public class SeatSelectionFragment extends Fragment {
         layoutNowShowing = view.findViewById(R.id.layoutNowShowingButtons);
         layoutComingSoon = view.findViewById(R.id.layoutComingSoonButtons);
 
+        legendBooked = view.findViewById(R.id.legendBooked);
+        legendYours = view.findViewById(R.id.legendYours);
+
         if (movie != null) {
             txtMovie.setText(movie.getName());
             
             if (movie.isNowShowing()) {
                 layoutNowShowing.setVisibility(View.VISIBLE);
                 layoutComingSoon.setVisibility(View.GONE);
+                
+                // Set legend colors for Now Showing: Red for Booked, Green for Yours
+                legendBooked.getBackground().setTint(0xFFFF0000); // Red
+                legendYours.getBackground().setTint(0xFF00FF00);   // Green
             } else {
                 layoutNowShowing.setVisibility(View.GONE);
                 layoutComingSoon.setVisibility(View.VISIBLE);
+                
+                // Change legend colors for Coming Soon to White
+                legendBooked.getBackground().setTint(0xFFFFFFFF);
+                legendYours.getBackground().setTint(0xFFFFFFFF);
                 
                 btnWatchTrailer.setOnClickListener(v -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(movie.getTrailerUrl()));
@@ -130,7 +142,7 @@ public class SeatSelectionFragment extends Fragment {
 
             if (isBooked && movie != null && movie.isNowShowing()) {
                 seat.setBackgroundResource(R.drawable.circle_unselected);
-                seat.getBackground().setTint(0xFFFF0000); // Red for booked (only for Now Showing)
+                seat.getBackground().setTint(0xFFFF0000); // Red for booked
                 seat.setEnabled(false);
             } else {
                 seat.setBackgroundResource(R.drawable.circle_unselected);
