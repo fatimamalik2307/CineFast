@@ -40,13 +40,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         holder.txtMovieGenre.setText(movie.getGenre());
         holder.imgMoviePoster.setImageResource(movie.getPosterResource());
 
-        if (!movie.isNowShowing()) {
-            holder.btnBook.setText("Coming Soon");
-            holder.btnBook.setEnabled(false);
-        } else {
-            holder.btnBook.setText("Book Seats");
-            holder.btnBook.setEnabled(true);
-        }
+        // Both Now Showing and Coming Soon will show "Book Seats" and be enabled
+        // The specific behavior is handled inside SeatSelectionFragment
+        holder.btnBook.setText("Book Seats");
+        holder.btnBook.setEnabled(true);
 
         holder.btnBook.setOnClickListener(v -> listener.onBookClick(movie));
 
