@@ -25,8 +25,8 @@ public class ComingSoonFragment extends Fragment {
 
         List<Movie> movies = new ArrayList<>();
         // Updated with correct YouTube trailer links
-        movies.add(new Movie("Wonder Woman", "Action • 141 min", R.drawable.wonder, "https://www.youtube.com/watch?v=1Q8fG0zokhc", false));
-        movies.add(new Movie("Cinderella", "Fantasy • 105 min", R.drawable.cinderella, "https://www.youtube.com/watch?v=20DGwLpC4O4", false));
+        movies.add(new Movie("Wonder Woman", "Action • 141 min", R.drawable.wonder, "https://www.youtube.com/watch?v=5lGoQhFb4NM", false));
+        movies.add(new Movie("Cinderella", "Fantasy • 105 min", R.drawable.cinderella, "https://www.youtube.com/watch?v=McQsZ6koLb8", false));
         movies.add(new Movie("Marvel's Avengers", "Action • 143 min", R.drawable.marvel, "https://www.youtube.com/watch?v=eOrNdBpGMv8", false));
 
         recyclerView.setAdapter(new MovieAdapter(movies, movie -> {

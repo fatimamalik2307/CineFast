@@ -14,23 +14,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
 public class TicketSummaryFragment extends Fragment {
 
     private Movie movie;
-    private int seatCount;
+    private HashSet<Integer> selectedSeats;
     private List<Snack> snacks;
     private double totalPrice;
+    private boolean cameFromSnacks;
 
-    public static TicketSummaryFragment newInstance(Movie movie, int seatCount, List<Snack> snacks) {
+    public static TicketSummaryFragment newInstance(Movie movie, HashSet<Integer> selectedSeats, List<Snack> snacks) {
         TicketSummaryFragment fragment = new TicketSummaryFragment();
         Bundle args = new Bundle();
         args.putSerializable("movie_obj", movie);
-        args.putInt("seat_count", seatCount);
+        args.putSerializable("selected_seats", selectedSeats);
         if (snacks != null) {
             args.putSerializable("snack_list", (Serializable) snacks);
+            args.putBoolean("came_from_snacks", true);
+        } else {
+            args.putBoolean("came_from_snacks", false);
         }
         fragment.setArguments(args);
         return fragment;
@@ -41,8 +46,9 @@ public class TicketSummaryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             movie = (Movie) getArguments().getSerializable("movie_obj");
-            seatCount = getArguments().getInt("seat_count");
+            selectedSeats = (HashSet<Integer>) getArguments().getSerializable("selected_seats");
             snacks = (List<Snack>) getArguments().getSerializable("snack_list");
+            cameFromSnacks = getArguments().getBoolean("came_from_snacks");
         }
     }
 
@@ -66,10 +72,17 @@ public class TicketSummaryFragment extends Fragment {
             imgPoster.setImageResource(movie.getPosterResource());
         }
 
-        // Add Ticket Rows
+        // Add Ticket Rows with Row/Col formatting
         double ticketPricePerSeat = 16.0;
-        for (int i = 0; i < seatCount; i++) {
-            addRow(layoutTickets, "Ticket " + (i + 1), "16.00 USD");
+        int count = 1;
+        StringBuilder ticketNames = new StringBuilder();
+        if (selectedSeats != null) {
+            for (Integer seatIndex : selectedSeats) {
+                String seatLabel = formatSeat(seatIndex);
+                addRow(layoutTickets, "Ticket " + count + " (" + seatLabel + ")", "16.00 USD");
+                ticketNames.append(seatLabel).append(", ");
+                count++;
+            }
         }
 
         // Add Snack Rows
@@ -88,33 +101,50 @@ public class TicketSummaryFragment extends Fragment {
             view.findViewById(R.id.lblSmaks).setVisibility(View.GONE);
         }
 
+        int seatCount = (selectedSeats != null) ? selectedSeats.size() : 0;
         totalPrice = (seatCount * ticketPricePerSeat) + snacksTotal;
         txtGrandTotal.setText(String.format(Locale.US, "$%.2f", totalPrice));
 
-        btnBack.setOnClickListener(v -> getActivity().onBackPressed());
+        // BACK BUTTON LOGIC: Navigate back to the previous screen (Snacks or Seat Selection)
+        btnBack.setOnClickListener(v -> {
+            if (cameFromSnacks) {
+                // Go back to Snacks with preserved data
+                SnacksFragment fragment = SnacksFragment.newInstance(movie, selectedSeats, snacks);
+                ((MainActivity) getActivity()).loadFragment(fragment);
+            } else {
+                // Go back to Seat Selection with preserved data
+                SeatSelectionFragment fragment = SeatSelectionFragment.newInstance(movie, selectedSeats);
+                ((MainActivity) getActivity()).loadFragment(fragment);
+            }
+        });
 
         btnFinish.setOnClickListener(v -> {
             saveBooking();
             Toast.makeText(getContext(), "Booking Confirmed!", Toast.LENGTH_SHORT).show();
             
-            // Share Ticket logic
             String msg = "🎬 CineFAST Ticket\n\n" +
                     "Movie: " + (movie != null ? movie.getName() : "N/A") + "\n" +
-                    "Seats: " + seatCount + "\n" +
+                    "Seats: " + ticketNames.toString() + "\n" +
                     "TOTAL: " + String.format(Locale.US, "$%.2f", totalPrice);
             
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT, msg);
             sendIntent.setType("text/plain");
-            
             startActivity(Intent.createChooser(sendIntent, "Send Ticket via"));
             
-            // Go back to home
             ((MainActivity) getActivity()).loadFragment(new HomeFragment());
         });
 
         return view;
+    }
+
+    private String formatSeat(int index) {
+        int rowIdx = index / 9;
+        int colIdx = index % 9;
+        char rowLetter = (char) ('A' + rowIdx);
+        int seatNum = (colIdx < 4) ? colIdx + 1 : colIdx;
+        return "Row " + rowLetter + ", Seat " + seatNum;
     }
 
     private void addRow(LinearLayout container, String leftText, String rightText) {
@@ -126,13 +156,13 @@ public class TicketSummaryFragment extends Fragment {
         TextView txtLeft = new TextView(getContext());
         txtLeft.setText(leftText);
         txtLeft.setTextColor(Color.parseColor("#9CA3AF"));
-        txtLeft.setTextSize(15);
+        txtLeft.setTextSize(14);
 
         TextView txtRight = new TextView(getContext());
         txtRight.setText(rightText);
         txtRight.setTextColor(Color.WHITE);
         txtRight.setTypeface(null, Typeface.BOLD);
-        txtRight.setTextSize(15);
+        txtRight.setTextSize(14);
 
         RelativeLayout.LayoutParams rightParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -149,7 +179,7 @@ public class TicketSummaryFragment extends Fragment {
         SharedPreferences prefs = getActivity().getSharedPreferences("CineFast", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("last_movie", movie.getName());
-        editor.putInt("last_seats", seatCount);
+        editor.putInt("last_seats", (selectedSeats != null) ? selectedSeats.size() : 0);
         editor.putFloat("last_price", (float) totalPrice);
         editor.apply();
     }

@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -61,7 +63,18 @@ public class HomeFragment extends Fragment {
             tab.setText(position == 0 ? "NOW SHOWING" : "COMING SOON");
         }).attach();
 
-        menuMore.setOnClickListener(v -> showLastBooking());
+        menuMore.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(getContext(), v);
+            popup.getMenu().add("View Last Booking");
+            popup.setOnMenuItemClickListener(item -> {
+                if (item.getTitle().equals("View Last Booking")) {
+                    showLastBooking();
+                    return true;
+                }
+                return false;
+            });
+            popup.show();
+        });
 
         return view;
     }
@@ -86,9 +99,9 @@ public class HomeFragment extends Fragment {
 
     private void showLastBooking() {
         SharedPreferences prefs = getActivity().getSharedPreferences("CineFast", Context.MODE_PRIVATE);
-        String movie = prefs.getString("last_movie", null);
+        String movieName = prefs.getString("last_movie", null);
         
-        if (movie == null) {
+        if (movieName == null) {
             new AlertDialog.Builder(getContext())
                 .setTitle("Last Booking")
                 .setMessage("No previous booking found.")
@@ -96,11 +109,11 @@ public class HomeFragment extends Fragment {
                 .show();
         } else {
             int seats = prefs.getInt("last_seats", 0);
-            double price = prefs.getFloat("last_price", 0);
+            float price = prefs.getFloat("last_price", 0);
             
             new AlertDialog.Builder(getContext())
                 .setTitle("Last Booking")
-                .setMessage("Movie: " + movie + "\nSeats: " + seats + "\nTotal Price: $" + price)
+                .setMessage("Movie: " + movieName + "\nSeats: " + seats + "\nTotal Price: $" + String.format("%.2f", price))
                 .setPositiveButton("OK", null)
                 .show();
         }

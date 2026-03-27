@@ -21,13 +21,20 @@ public class SeatSelectionFragment extends Fragment {
     private View legendBooked, legendYours;
     
     private HashSet<Integer> selectedSeats = new HashSet<>();
-    private double seatPrice = 10.0;
+    private double seatPrice = 16.0;
     private Movie movie;
 
     public static SeatSelectionFragment newInstance(Movie movie) {
+        return newInstance(movie, null);
+    }
+
+    public static SeatSelectionFragment newInstance(Movie movie, HashSet<Integer> preSelectedSeats) {
         SeatSelectionFragment fragment = new SeatSelectionFragment();
         Bundle args = new Bundle();
         args.putSerializable("movie_obj", movie);
+        if (preSelectedSeats != null) {
+            args.putSerializable("pre_selected_seats", preSelectedSeats);
+        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -37,6 +44,10 @@ public class SeatSelectionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             movie = (Movie) getArguments().getSerializable("movie_obj");
+            HashSet<Integer> pre = (HashSet<Integer>) getArguments().getSerializable("pre_selected_seats");
+            if (pre != null) {
+                selectedSeats = pre;
+            }
         }
     }
 
@@ -66,14 +77,12 @@ public class SeatSelectionFragment extends Fragment {
                 layoutNowShowing.setVisibility(View.VISIBLE);
                 layoutComingSoon.setVisibility(View.GONE);
                 
-                // Set legend colors for Now Showing: Red for Booked, Green for Yours
                 legendBooked.getBackground().setTint(0xFFFF0000); // Red
                 legendYours.getBackground().setTint(0xFF00FF00);   // Green
             } else {
                 layoutNowShowing.setVisibility(View.GONE);
                 layoutComingSoon.setVisibility(View.VISIBLE);
                 
-                // Change legend colors for Coming Soon to White
                 legendBooked.getBackground().setTint(0xFFFFFFFF);
                 legendYours.getBackground().setTint(0xFFFFFFFF);
                 
@@ -112,7 +121,6 @@ public class SeatSelectionFragment extends Fragment {
             int row = i / 9;
             int col = i % 9;
 
-            // Gap in the middle (col index 4)
             if (col == 4) {
                 View gap = new View(getContext());
                 GridLayout.LayoutParams pGap = new GridLayout.LayoutParams();
@@ -131,7 +139,6 @@ public class SeatSelectionFragment extends Fragment {
             seat.setLayoutParams(p);
             seat.setText("");
 
-            // Make some seats invisible to shape the theater
             if ((row == 0 || row == 7) && (col == 0 || col == 8)) {
                 seat.setVisibility(View.INVISIBLE);
                 grid.addView(seat);
@@ -142,17 +149,21 @@ public class SeatSelectionFragment extends Fragment {
 
             if (isBooked && movie != null && movie.isNowShowing()) {
                 seat.setBackgroundResource(R.drawable.circle_unselected);
-                seat.getBackground().setTint(0xFFFF0000); // Red for booked
+                seat.getBackground().setTint(0xFFFF0000); 
                 seat.setEnabled(false);
             } else {
                 seat.setBackgroundResource(R.drawable.circle_unselected);
-                seat.getBackground().setTint(0xFFFFFFFF); // White for available
+                if (selectedSeats.contains(i)) {
+                    seat.getBackground().setTint(0xFF00FF00); // Green for selection
+                } else {
+                    seat.getBackground().setTint(0xFFFFFFFF); // White for available
+                }
 
                 if (movie != null && movie.isNowShowing()) {
                     int finalI = i;
                     seat.setOnClickListener(v -> toggleSeat(seat, finalI));
                 } else {
-                    seat.setEnabled(false); // Disable interaction for Coming Soon
+                    seat.setEnabled(false); 
                 }
             }
 
@@ -163,10 +174,10 @@ public class SeatSelectionFragment extends Fragment {
     private void toggleSeat(Button seat, int index) {
         if (selectedSeats.contains(index)) {
             selectedSeats.remove(index);
-            seat.getBackground().setTint(0xFFFFFFFF); // Back to available (white)
+            seat.getBackground().setTint(0xFFFFFFFF); 
         } else {
             selectedSeats.add(index);
-            seat.getBackground().setTint(0xFF00FF00); // Green for selection
+            seat.getBackground().setTint(0xFF00FF00); 
         }
         updateCount();
     }
@@ -178,12 +189,12 @@ public class SeatSelectionFragment extends Fragment {
     }
 
     private void goSnacks() {
-        SnacksFragment fragment = SnacksFragment.newInstance(movie, selectedSeats.size());
+        SnacksFragment fragment = SnacksFragment.newInstance(movie, selectedSeats);
         ((MainActivity) getActivity()).loadFragment(fragment);
     }
 
     private void goSummary() {
-        TicketSummaryFragment fragment = TicketSummaryFragment.newInstance(movie, selectedSeats.size(), null);
+        TicketSummaryFragment fragment = TicketSummaryFragment.newInstance(movie, selectedSeats, null);
         ((MainActivity) getActivity()).loadFragment(fragment);
     }
 }
