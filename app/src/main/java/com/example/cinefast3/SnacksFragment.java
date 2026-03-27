@@ -96,6 +96,6 @@ public class SnacksFragment extends Fragment implements SnackAdapter.OnSnackChan
             currentTotal += s.getPrice() * s.getQuantity();
         }
         totalPrice = currentTotal;
-        // Total price display removed to match your "exact design" request
+
     }
 }
