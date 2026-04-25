@@ -21,10 +21,11 @@
         </activity>
 
         <activity android:name=".OnboardingActivity" android:exported="false"/>
+        <activity android:name=".LoginActivity" android:exported="false"/>
+        <activity android:name=".SignupActivity" android:exported="false"/>
         <activity android:name=".MainActivity" android:exported="false"/>
 
-        <!-- Old activities can be removed later if not needed,
-             but we must keep Splash, Onboarding, and MainActivity -->
+        <!-- Old activities -->
         <activity android:name=".HomeActivity" android:exported="false"/>
         <activity android:name=".SeatSelectionActivity" android:exported="false"/>
         <activity android:name=".SnacksActivity" android:exported="false"/>

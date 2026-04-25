@@ -15,7 +15,7 @@ public class OnboardingActivity extends AppCompatActivity {
         Button btnGetStarted = findViewById(R.id.btnGetStarted);
 
         btnGetStarted.setOnClickListener(v -> {
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
     }

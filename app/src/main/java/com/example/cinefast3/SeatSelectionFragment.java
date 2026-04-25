@@ -96,7 +96,11 @@ public class SeatSelectionFragment extends Fragment {
         createSeats();
         updateCount();
 
-        btnSnacks.setOnClickListener(v -> goSnacks());
+        btnSnacks.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Booking Confirmed!", Toast.LENGTH_SHORT).show();
+            goSnacks();
+        });
+
         btnBookOnly.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Booking Confirmed!", Toast.LENGTH_SHORT).show();
             goSummary();
