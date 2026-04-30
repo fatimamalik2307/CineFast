@@ -9,11 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ComingSoonFragment extends Fragment {
@@ -27,50 +22,16 @@ public class ComingSoonFragment extends Fragment {
         recyclerView.setPadding(16, 16, 16, 16);
         recyclerView.setClipToPadding(false);
 
-        List<Movie> movies = loadMoviesFromJson();
+        // Load movies from JSON via Repository (Coming Soon = false)
+        List<Movie> movies = MovieRepository.getMovies(requireContext(), false);
 
         recyclerView.setAdapter(new MovieAdapter(movies, movie -> {
+            // Usually Coming Soon movies might show details or trailer instead of seat selection
+            // but keeping it consistent with your current logic
             SeatSelectionFragment fragment = SeatSelectionFragment.newInstance(movie);
             ((MainActivity) getActivity()).loadFragment(fragment);
         }));
 
         return recyclerView;
-    }
-
-    private List<Movie> loadMoviesFromJson() {
-        List<Movie> list = new ArrayList<>();
-        try {
-            InputStream is = getContext().getAssets().open("movies.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            String json = new String(buffer, StandardCharsets.UTF_8);
-            JSONArray array = new JSONArray(json);
-
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject obj = array.getJSONObject(i);
-                boolean isNowShowing = obj.getBoolean("isNowShowing");
-                
-                if (!isNowShowing) {
-                    Movie movie = new Movie(
-                        obj.getString("name"),
-                        obj.getString("genre"),
-                        obj.getString("poster"),
-                        obj.getString("trailerUrl"),
-                        false
-                    );
-                    
-                    int resId = getContext().getResources().getIdentifier(
-                        movie.getPosterName(), "drawable", getContext().getPackageName());
-                    movie.setPosterResource(resId);
-                    
-                    list.add(movie);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
     }
 }
