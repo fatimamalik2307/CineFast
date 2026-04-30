@@ -19,6 +19,7 @@ public class SnacksFragment extends Fragment implements SnackAdapter.OnSnackChan
     private HashSet<Integer> selectedSeats;
     private List<Snack> snacks = new ArrayList<>();
     private double totalPrice;
+    private DatabaseHelper dbHelper;
 
     public static SnacksFragment newInstance(Movie movie, HashSet<Integer> selectedSeats) {
         return newInstance(movie, selectedSeats, null);
@@ -39,6 +40,7 @@ public class SnacksFragment extends Fragment implements SnackAdapter.OnSnackChan
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbHelper = new DatabaseHelper(requireContext());
         if (getArguments() != null) {
             movie = (Movie) getArguments().getSerializable("movie_obj");
             selectedSeats = (HashSet<Integer>) getArguments().getSerializable("selected_seats");
@@ -57,11 +59,9 @@ public class SnacksFragment extends Fragment implements SnackAdapter.OnSnackChan
         ListView listView = view.findViewById(R.id.listSnacks);
         Button btnConfirm = view.findViewById(R.id.btnConfirmSnacks);
 
+        // Load snacks from SQLite Database if list is empty
         if (snacks.isEmpty()) {
-            snacks.add(new Snack("Popcorn", "Large / Buttered", 8.99, R.drawable.popcorn, 0xFFFF9800));
-            snacks.add(new Snack("Nachos", "With Cheese Dip", 7.99, R.drawable.nachos, 0xFFFF7043));
-            snacks.add(new Snack("Soft Drink", "Large / Any Flavor", 5.99, R.drawable.drink, 0xFFE91E63));
-            snacks.add(new Snack("Candy Mix", "Assorted Candies", 6.99, R.drawable.candy, 0xFF9C27B0));
+            snacks = dbHelper.getAllSnacks();
         }
 
         updateTotal();
@@ -91,11 +91,16 @@ public class SnacksFragment extends Fragment implements SnackAdapter.OnSnackChan
     }
 
     private void updateTotal() {
-        double currentTotal = selectedSeats.size() * 16.0; 
-        for (Snack s : snacks) {
-            currentTotal += s.getPrice() * s.getQuantity();
+        // Base price calculation (Seats)
+        double currentTotal = selectedSeats != null ? selectedSeats.size() * 16.0 : 0; 
+        
+        // Add snack prices
+        if (snacks != null) {
+            for (Snack s : snacks) {
+                currentTotal += s.getPrice() * s.getQuantity();
+            }
         }
         totalPrice = currentTotal;
-
+        // If there was a TextView for total, it should be updated here.
     }
 }
