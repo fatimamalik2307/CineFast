@@ -9,6 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +27,7 @@ public class ComingSoonFragment extends Fragment {
         recyclerView.setPadding(16, 16, 16, 16);
         recyclerView.setClipToPadding(false);
 
-        List<Movie> movies = new ArrayList<>();
-        movies.add(new Movie("Wonder Woman", "Action • 141 min", R.drawable.wonder, "https://www.youtube.com/watch?v=5lGoQhFb4NM", false));
-        movies.add(new Movie("Cinderella", "Fantasy • 105 min", R.drawable.cinderella, "https://www.youtube.com/watch?v=McQsZ6koLb8", false));
-        movies.add(new Movie("Marvel's Avengers", "Action • 143 min", R.drawable.marvel, "https://www.youtube.com/watch?v=eOrNdBpGMv8", false));
+        List<Movie> movies = loadMoviesFromJson();
 
         recyclerView.setAdapter(new MovieAdapter(movies, movie -> {
             SeatSelectionFragment fragment = SeatSelectionFragment.newInstance(movie);
@@ -34,5 +35,42 @@ public class ComingSoonFragment extends Fragment {
         }));
 
         return recyclerView;
+    }
+
+    private List<Movie> loadMoviesFromJson() {
+        List<Movie> list = new ArrayList<>();
+        try {
+            InputStream is = getContext().getAssets().open("movies.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            String json = new String(buffer, StandardCharsets.UTF_8);
+            JSONArray array = new JSONArray(json);
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                boolean isNowShowing = obj.getBoolean("isNowShowing");
+                
+                if (!isNowShowing) {
+                    Movie movie = new Movie(
+                        obj.getString("name"),
+                        obj.getString("genre"),
+                        obj.getString("poster"),
+                        obj.getString("trailerUrl"),
+                        false
+                    );
+                    
+                    int resId = getContext().getResources().getIdentifier(
+                        movie.getPosterName(), "drawable", getContext().getPackageName());
+                    movie.setPosterResource(resId);
+                    
+                    list.add(movie);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

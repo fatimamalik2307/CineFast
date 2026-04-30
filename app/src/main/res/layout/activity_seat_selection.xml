@@ -24,7 +24,7 @@
             android:background="@drawable/circle_unselected"
             android:backgroundTint="#FFFFFF"
             android:padding="12dp"
-            android:src="@android:drawable/ic_media_previous"
+            android:src="@drawable/ic_back"
             app:tint="#757575" />
 
         <LinearLayout
@@ -103,7 +103,7 @@
                         <ImageView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:src="@android:drawable/ic_menu_mylocation"
+                            android:src="@drawable/ic_location"
                             app:tint="#424242" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -139,7 +139,7 @@
                         <ImageView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:src="@android:drawable/ic_menu_compass"
+                            android:src="@drawable/ic_compass"
                             app:tint="#424242" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -173,7 +173,7 @@
                         <ImageView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:src="@android:drawable/ic_menu_my_calendar"
+                            android:src="@drawable/ic_calendar"
                             app:tint="#424242" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -207,7 +207,7 @@
                         <ImageView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
-                            android:src="@android:drawable/ic_menu_recent_history"
+                            android:src="@drawable/ic_history"
                             app:tint="#424242" />
                         <TextView
                             android:layout_width="wrap_content"

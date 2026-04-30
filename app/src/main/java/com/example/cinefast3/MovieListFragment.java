@@ -44,13 +44,19 @@ public class MovieListFragment extends Fragment {
 
         List<Movie> movies = new ArrayList<>();
         if (isNowShowing) {
-            movies.add(new Movie("The Dark Knight", "Action • 152 min", R.drawable.dark_knight, "https://youtu.be/EXeTwQWrcwY", true));
-            movies.add(new Movie("Inception", "Sci-Fi • 148 min", R.drawable.img, "https://youtu.be/YoHD9XEInc0", true));
-            movies.add(new Movie("Interstellar", "Sci-Fi • 169 min", R.drawable.img, "https://youtu.be/zSWdZVtXT7E", true));
+            movies.add(new Movie("The Dark Knight", "Action • 152 min", "dark_knight", "https://youtu.be/EXeTwQWrcwY", true));
+            movies.add(new Movie("Inception", "Sci-Fi • 148 min", "inception", "https://youtu.be/YoHD9XEInc0", true));
+            movies.add(new Movie("Interstellar", "Sci-Fi • 169 min", "interstellar", "https://youtu.be/zSWdZVtXT7E", true));
         } else {
-            movies.add(new Movie("Wonder Woman", "Action • 141 min", R.drawable.wonder, "https://youtu.be/1Q8fG0zokhc", false));
-            movies.add(new Movie("Cinderella", "Fantasy • 105 min", R.drawable.cinderella, "https://youtu.be/20DGwLpC4O4", false));
-            movies.add(new Movie("Marvel's Avengers", "Action • 143 min", R.drawable.marvel, "https://youtu.be/eOrNdBpGMv8", false));
+            movies.add(new Movie("Wonder Woman", "Action • 141 min", "wonder", "https://youtu.be/1Q8fG0zokhc", false));
+            movies.add(new Movie("Cinderella", "Fantasy • 105 min", "cinderella", "https://youtu.be/20DGwLpC4O4", false));
+            movies.add(new Movie("Marvel's Avengers", "Action • 143 min", "marvel", "https://youtu.be/eOrNdBpGMv8", false));
+        }
+
+        // Set resource IDs manually for these hardcoded movies since this fragment still uses a hardcoded list
+        for (Movie m : movies) {
+            int resId = getContext().getResources().getIdentifier(m.getPosterName(), "drawable", getContext().getPackageName());
+            m.setPosterResource(resId);
         }
 
         recyclerView.setAdapter(new MovieAdapter(movies, movie -> {

@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Update Nav Header with user info
         updateNavHeader();
 
         if (savedInstanceState == null) {
@@ -71,8 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             loadFragment(new HomeFragment());
         } else if (id == R.id.nav_bookings) {
-            // Placeholder for MyBookingsFragment
-            Toast.makeText(this, "My Bookings Coming Soon", Toast.LENGTH_SHORT).show();
+            loadFragment(new MyBookingsFragment());
         } else if (id == R.id.nav_logout) {
             logoutUser();
         }
@@ -82,14 +80,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void logoutUser() {
-        // Clear Firebase Session
         FirebaseAuth.getInstance().signOut();
-        
-        // Clear SharedPreferences Session
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         prefs.edit().clear().apply();
 
-        // Navigate back to Login
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

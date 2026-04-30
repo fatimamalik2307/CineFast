@@ -23,7 +23,7 @@
             android:background="@drawable/circle_unselected"
             android:backgroundTint="#FFFFFF"
             android:padding="12dp"
-            android:src="@android:drawable/ic_media_previous"
+            android:src="@drawable/ic_back"
             app:tint="#757575" />
 
         <LinearLayout
@@ -334,7 +334,7 @@
                     android:textStyle="bold"
                     android:textSize="12sp"
                     app:cornerRadius="26dp"
-                    app:icon="@android:drawable/ic_media_play"
+                    app:icon="@drawable/ic_play"
                     app:iconTint="#000000"
                     app:iconGravity="textStart"
                     app:iconPadding="4dp" />
