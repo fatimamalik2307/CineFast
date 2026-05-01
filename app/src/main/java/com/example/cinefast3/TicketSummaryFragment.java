@@ -13,7 +13,12 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -80,7 +85,7 @@ public class TicketSummaryFragment extends Fragment {
             for (Integer seatIndex : selectedSeats) {
                 String seatLabel = formatSeat(seatIndex);
                 addRow(layoutTickets, "Ticket " + count + " (" + seatLabel + ")", "16.00 USD");
-                ticketNames.append(seatLabel).append(", ");
+                ticketNames.append(seatLabel).append(count < selectedSeats.size() ? ", " : "");
                 count++;
             }
         }
@@ -98,29 +103,29 @@ public class TicketSummaryFragment extends Fragment {
         }
 
         if (layoutSnacks.getChildCount() == 0) {
-            view.findViewById(R.id.lblSmaks).setVisibility(View.GONE);
+            View lblSnacks = view.findViewById(R.id.lblSmaks);
+            if (lblSnacks != null) lblSnacks.setVisibility(View.GONE);
         }
 
         int seatCount = (selectedSeats != null) ? selectedSeats.size() : 0;
         totalPrice = (seatCount * ticketPricePerSeat) + snacksTotal;
         txtGrandTotal.setText(String.format(Locale.US, "$%.2f", totalPrice));
 
-        // BACK BUTTON LOGIC: Navigate back to the previous screen (Snacks or Seat Selection)
         btnBack.setOnClickListener(v -> {
             if (cameFromSnacks) {
-                // Go back to Snacks with preserved data
                 SnacksFragment fragment = SnacksFragment.newInstance(movie, selectedSeats, snacks);
                 ((MainActivity) getActivity()).loadFragment(fragment);
             } else {
-                // Go back to Seat Selection with preserved data
                 SeatSelectionFragment fragment = SeatSelectionFragment.newInstance(movie, selectedSeats);
                 ((MainActivity) getActivity()).loadFragment(fragment);
             }
         });
 
         btnFinish.setOnClickListener(v -> {
-            saveBooking();
-            Toast.makeText(getContext(), "Booking Confirmed!", Toast.LENGTH_SHORT).show();
+            saveBookingToFirebase(ticketNames.toString());
+            saveBookingToSharedPreferences();
+            
+            Toast.makeText(getContext(), "Booking Confirmed & Saved!", Toast.LENGTH_SHORT).show();
             
             String msg = "🎬 CineFAST Ticket\n\n" +
                     "Movie: " + (movie != null ? movie.getName() : "N/A") + "\n" +
@@ -137,6 +142,44 @@ public class TicketSummaryFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void saveBookingToFirebase(String seatsFormatted) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) return;
+
+        String userId = auth.getCurrentUser().getUid();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference("bookings").child(userId);
+        
+        String bookingId = database.push().getKey();
+        
+        SimpleDateFormat sdfDate = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String currentDate = sdfDate.format(new Date());
+        String currentTime = sdfTime.format(new Date());
+
+        Booking booking = new Booking(
+            userId,
+            movie != null ? movie.getName() : "Unknown",
+            seatsFormatted,
+            totalPrice,
+            currentDate,
+            currentTime
+        );
+
+        if (bookingId != null) {
+            database.child(bookingId).setValue(booking);
+        }
+    }
+
+    private void saveBookingToSharedPreferences() {
+        if (movie == null) return;
+        SharedPreferences prefs = getActivity().getSharedPreferences("CineFast", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("last_movie", movie.getName());
+        editor.putInt("last_seats", (selectedSeats != null) ? selectedSeats.size() : 0);
+        editor.putFloat("last_price", (float) totalPrice);
+        editor.apply();
     }
 
     private String formatSeat(int index) {
@@ -172,15 +215,5 @@ public class TicketSummaryFragment extends Fragment {
         row.addView(txtLeft);
         row.addView(txtRight);
         container.addView(row);
-    }
-
-    private void saveBooking() {
-        if (movie == null) return;
-        SharedPreferences prefs = getActivity().getSharedPreferences("CineFast", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("last_movie", movie.getName());
-        editor.putInt("last_seats", (selectedSeats != null) ? selectedSeats.size() : 0);
-        editor.putFloat("last_price", (float) totalPrice);
-        editor.apply();
     }
 }
