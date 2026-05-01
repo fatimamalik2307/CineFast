@@ -31,7 +31,9 @@ public class MovieRepository {
                         obj.getString("genre"),
                         obj.getString("poster"),
                         obj.getString("trailerUrl"),
-                        movieStatus
+                        movieStatus,
+                        obj.optString("date", "01.01.2024"), // Default to past if missing
+                        obj.optString("time", "12:00")
                     );
                     
                     int resId = context.getResources().getIdentifier(

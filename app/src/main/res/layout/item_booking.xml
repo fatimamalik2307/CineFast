@@ -19,7 +19,7 @@
             android:layout_height="120dp"
             android:layout_alignParentStart="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/img_1"
+            android:src="@drawable/cinefast_logo"
             app:shapeAppearanceOverlay="@style/RoundedImageView" />
 
         <LinearLayout
@@ -35,7 +35,7 @@
                 android:id="@+id/txtMovieName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Oppenheimer"
+                android:text="Movie Name"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -58,7 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="13.04.2025, 22:15"
+                    android:text="Date • Time"
                     android:textColor="#9CA3AF"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -81,7 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="3 Tickets"
+                    android:text="Tickets"
                     android:textColor="#9CA3AF"
                     android:textSize="13sp" />
             </LinearLayout>

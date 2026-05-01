@@ -37,17 +37,26 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         holder.txtName.setText(booking.movieName);
         holder.txtDateTime.setText(booking.date + " • " + booking.time);
         
-        // Count tickets (seats are comma separated)
-        int ticketCount = booking.seats.split(",").length;
-        holder.txtTickets.setText(ticketCount + (ticketCount > 1 ? " Tickets" : " Ticket"));
+        // Count tickets
+        int ticketCount = 0;
+        if (booking.seats != null && !booking.seats.isEmpty()) {
+            ticketCount = booking.seats.split(",").length;
+        }
+        holder.txtTickets.setText(ticketCount + (ticketCount == 1 ? " Ticket" : " Tickets"));
 
-        // Load poster
-        int resId = holder.itemView.getContext().getResources().getIdentifier(
-                booking.posterName, "drawable", holder.itemView.getContext().getPackageName());
-        if (resId != 0) {
-            holder.imgPoster.setImageResource(resId);
+        // Load poster with improved fallback
+        if (booking.posterName != null) {
+            int resId = holder.itemView.getContext().getResources().getIdentifier(
+                    booking.posterName, "drawable", holder.itemView.getContext().getPackageName());
+            
+            if (resId != 0) {
+                holder.imgPoster.setImageResource(resId);
+            } else {
+                holder.imgPoster.setImageResource(R.drawable.cinefast_logo);
+            }
         } else {
-            holder.imgPoster.setImageResource(R.drawable.img_1); // fallback
+            // This handles the "P" issue for old data
+            holder.imgPoster.setImageResource(R.drawable.cinefast_logo);
         }
 
         holder.btnCancel.setOnClickListener(v -> cancelClickListener.onCancelClick(booking));

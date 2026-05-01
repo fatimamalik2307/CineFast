@@ -18,7 +18,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -154,15 +153,9 @@ public class TicketSummaryFragment extends Fragment {
         
         String bookingId = database.push().getKey();
         
-        SimpleDateFormat sdfDate = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        
-        // MOCK FUTURE DATE FOR TESTING
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR, 7); // Set date to 7 days in the future
-        
-        String futureDate = sdfDate.format(cal.getTime());
-        String futureTime = sdfTime.format(cal.getTime());
+        // Use the date and time from the Movie object (loaded from JSON)
+        String bookingDate = movie != null ? movie.getDate() : "01.01.2024";
+        String bookingTime = movie != null ? movie.getTime() : "12:00";
 
         Booking booking = new Booking(
             bookingId,
@@ -171,8 +164,8 @@ public class TicketSummaryFragment extends Fragment {
             movie != null ? movie.getPosterName() : "img_1",
             seatsFormatted,
             totalPrice,
-            futureDate,
-            futureTime
+            bookingDate,
+            bookingTime
         );
 
         if (bookingId != null) {

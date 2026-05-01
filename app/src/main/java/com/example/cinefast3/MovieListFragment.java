@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MovieListFragment extends Fragment {
@@ -42,22 +41,9 @@ public class MovieListFragment extends Fragment {
         recyclerView.setPadding(16, 16, 16, 16);
         recyclerView.setClipToPadding(false);
 
-        List<Movie> movies = new ArrayList<>();
-        if (isNowShowing) {
-            movies.add(new Movie("The Dark Knight", "Action • 152 min", "dark_knight", "https://youtu.be/EXeTwQWrcwY", true));
-            movies.add(new Movie("Inception", "Sci-Fi • 148 min", "inception", "https://youtu.be/YoHD9XEInc0", true));
-            movies.add(new Movie("Interstellar", "Sci-Fi • 169 min", "interstellar", "https://youtu.be/zSWdZVtXT7E", true));
-        } else {
-            movies.add(new Movie("Wonder Woman", "Action • 141 min", "wonder", "https://youtu.be/1Q8fG0zokhc", false));
-            movies.add(new Movie("Cinderella", "Fantasy • 105 min", "cinderella", "https://youtu.be/20DGwLpC4O4", false));
-            movies.add(new Movie("Marvel's Avengers", "Action • 143 min", "marvel", "https://youtu.be/eOrNdBpGMv8", false));
-        }
-
-        // Set resource IDs manually for these hardcoded movies since this fragment still uses a hardcoded list
-        for (Movie m : movies) {
-            int resId = getContext().getResources().getIdentifier(m.getPosterName(), "drawable", getContext().getPackageName());
-            m.setPosterResource(resId);
-        }
+        // Load movies from JSON via Repository instead of hardcoding
+        // This fixes the constructor error and follows Assignment 3 requirements
+        List<Movie> movies = MovieRepository.getMovies(requireContext(), isNowShowing);
 
         recyclerView.setAdapter(new MovieAdapter(movies, movie -> {
             SeatSelectionFragment fragment = SeatSelectionFragment.newInstance(movie);
