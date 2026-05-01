@@ -159,8 +159,10 @@ public class TicketSummaryFragment extends Fragment {
         String currentTime = sdfTime.format(new Date());
 
         Booking booking = new Booking(
+            bookingId,
             userId,
             movie != null ? movie.getName() : "Unknown",
+            movie != null ? movie.getPosterName() : "img_1",
             seatsFormatted,
             totalPrice,
             currentDate,
