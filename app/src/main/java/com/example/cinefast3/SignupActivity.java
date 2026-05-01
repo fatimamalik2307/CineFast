@@ -1,6 +1,8 @@
 package com.example.cinefast3;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -24,6 +26,8 @@ public class SignupActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private static final String PREF_NAME = "cinefast_session_pref_v3";
+    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +98,10 @@ public class SignupActivity extends AppCompatActivity {
         mDatabase.child("users").child(uid).setValue(user)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        // Set Session Preference on successful signup
+                        SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+                        prefs.edit().putBoolean(KEY_IS_LOGGED_IN, true).apply();
+
                         Toast.makeText(SignupActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(SignupActivity.this, MainActivity.class));
                         finish();
