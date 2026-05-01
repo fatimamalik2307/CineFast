@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -15,6 +16,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -84,8 +87,20 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                        Exception e = task.getException();
+                        String errorMessage = e != null ? e.getMessage() : "Authentication failed";
+                        
+                        // Show the exact error in Toast as requested
+                        Toast.makeText(LoginActivity.this, "Login Failed: " + errorMessage, Toast.LENGTH_SHORT).show();
+
+                        // Navigate to Signup if:
+                        // 1. User is not found (InvalidUser)
+                        // 2. OR Credentials are "incorrect" (which happens if account doesn't exist AND protection is ON)
+                        if (e instanceof FirebaseAuthInvalidUserException || e instanceof FirebaseAuthInvalidCredentialsException) {
+                            Log.d("LoginActivity", "User not found or invalid credentials, navigating to Signup");
+                            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+                            startActivity(intent);
+                        }
                     }
                 });
     }
