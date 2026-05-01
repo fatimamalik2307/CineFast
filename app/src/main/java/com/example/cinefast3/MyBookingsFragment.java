@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +37,14 @@ public class MyBookingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_bookings, container, false);
 
+        // Header Back Button
+        ImageButton btnBack = view.findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+
         recyclerView = view.findViewById(R.id.rvMyBookings);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -66,7 +75,9 @@ public class MyBookingsFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -103,9 +114,9 @@ public class MyBookingsFragment extends Fragment {
 
     private void deleteBooking(Booking booking) {
         databaseReference.child(booking.bookingId).removeValue().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
+            if (task.isSuccessful() && getContext() != null) {
                 Toast.makeText(getContext(), "Booking Cancelled Successfully", Toast.LENGTH_SHORT).show();
-            } else {
+            } else if (getContext() != null) {
                 Toast.makeText(getContext(), "Failed to cancel booking", Toast.LENGTH_SHORT).show();
             }
         });
